@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Devshelf – Cloud hosting & npm tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f5f4;--surface:#fff;--ink:#12222b;--muted:#5b6b73;--line:#d5dfdc;--accent:#0a7c66;--accent-ink:#fff;--warm:#e0a21b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a20;--surface:#15262e;--ink:#e8f0ee;--muted:#93a6ad;--line:#27404a;--accent:#2fc4a2;--accent-ink:#06211a}}
+:root[data-theme="dark"]{--bg:#0e1a20;--surface:#15262e;--ink:#e8f0ee;--muted:#93a6ad;--line:#27404a;--accent:#2fc4a2;--accent-ink:#06211a}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header.top{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.logo{font-weight:800;font-size:1.25rem;letter-spacing:-.02em}
+.logo i{font-style:normal;color:var(--accent)}
+.hero{padding:40px 0 28px}
+.hero h1{font-size:clamp(2rem,6vw,3.6rem);line-height:1.05;letter-spacing:-.03em;margin:0 0 14px;font-weight:800;max-width:15ch}
+.hero p{color:var(--muted);max-width:52ch;margin:0;font-size:1.05rem}
+.layout{display:grid;grid-template-columns:1fr 330px;gap:24px;align-items:start;padding-bottom:60px}
+@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.card.feat{grid-column:1/-1;border:2px solid var(--accent);flex-direction:row;flex-wrap:wrap;gap:18px;justify-content:space-between}
+.card h3{margin:0;font-size:1.1rem}
+.card p{margin:0;color:var(--muted);font-size:.93rem}
+.tag{display:inline-block;font-size:.78rem;background:var(--warm);color:#2a1d00;padding:1px 8px;border-radius:99px;font-weight:600;width:max-content}
+.price{font-size:1.5rem;font-weight:800}
+.price small{font-size:.85rem;color:var(--muted);font-weight:400}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:auto}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.stepper button{width:34px;height:34px;border:0;background:transparent;color:var(--ink);font-size:1.1rem;cursor:pointer}
+.stepper span{min-width:84px;text-align:center;font-size:.9rem}
+button.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.btn.in{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+aside.cart{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+aside.cart h2{margin:0 0 10px;font-size:1.1rem}
+.line{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.line small{display:block;color:var(--muted)}
+.line button{background:none;border:0;color:var(--muted);cursor:pointer;font:inherit;font-size:.82rem;padding:0;text-decoration:underline}
+.total{display:flex;justify-content:space-between;font-weight:800;font-size:1.2rem;margin:14px 0}
+.empty{color:var(--muted);font-size:.93rem}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);max-width:440px;width:calc(100% - 32px);padding:24px}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+dialog h2{margin:0 0 6px}
+.acct{border:1px solid var(--line);border-radius:8px;margin:14px 0}
+.acct div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.acct div:last-child{border:0}
+.acct small{color:var(--muted);display:block;font-size:.78rem}
+.acct b{font-size:1.02rem;word-break:break-word}
+.acct button{flex:none}
+.note{font-size:.88rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><div class="logo">dev<i>shelf</i></div></header>
+  <section class="hero">
+    <h1>Host it. Install it. Ship it.</h1>
+    <p>Buy cloud hosting by the month and add the npm packages and dev tools your project needs. Pick what you want, see the total, and pay by bank transfer.</p>
+  </section>
+  <div class="layout">
+    <main><div class="grid" id="grid"></div></main>
+    <aside class="cart" aria-live="polite">
+      <h2>Your order</h2>
+      <div id="lines"></div>
+      <div class="total"><span>Total</span><span id="total">$0</span></div>
+      <button class="btn" id="buy" style="width:100%">Purchase</button>
+    </aside>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <h2>Pay by bank transfer</h2>
+  <p class="note" id="amt"></p>
+  <div class="acct">
+    <div><span><small>Account name</small><b>Ogbatue Chiweike</b></span><button class="btn ghost" data-copy="Ogbatue Chiweike">Copy</button></div>
+    <div><span><small>Bank</small><b>9PSB (9 Payment Service Bank)</b></span><button class="btn ghost" data-copy="9PSB">Copy</button></div>
+    <div><span><small>Account number</small><b>6515634185</b></span><button class="btn ghost" data-copy="6515634185">Copy</button></div>
+    <div><span><small>Eversend</small><b>Ogbatue Chiweike</b></span></div>
+  </div>
+  <p class="note">Send the exact total, then keep your transfer receipt. Your order is activated after the payment is confirmed.</p>
+  <button class="btn" id="close" style="width:100%;margin-top:10px">Done</button>
+</dialog>
+
+<script>
+var P=[
+{id:"host",name:"Cloud hosting",desc:"Fast, always-on hosting for your site or app. Pay for as many months as you need.",price:10,rec:true,feat:true,tag:"Most popular"},
+{id:"npm",name:"npm dependencies pack",desc:"Your project's npm dependencies installed, configured and ready to deploy.",price:10,rec:false},
+{id:"domain",name:"Custom domain",desc:"Register a .com domain and point it to your host.",price:12,rec:true,unit:"year",step:12,minU:1},
+{id:"ssl",name:"SSL certificate",desc:"HTTPS for your site, set up and renewed for you.",price:8,rec:true},
+{id:"db",name:"Managed database",desc:"PostgreSQL or MongoDB with daily backups.",price:15,rec:true},
+{id:"cdn",name:"CDN",desc:"Serve your files from servers close to your users.",price:5,rec:true},
+{id:"ci",name:"CI/CD pipeline",desc:"Automatic tests and deploys every time you push code.",price:7,rec:true},
+{id:"mail",name:"Business email",desc:"Email addresses on your own domain, with 5 mailboxes.",price:4,rec:true},
+{id:"reg",name:"Private npm registry",desc:"Publish and install your own private packages.",price:9,rec:true},
+{id:"vps",name:"VPS server",desc:"2 vCPU, 4 GB RAM, 80 GB SSD with full root access.",price:20,rec:true},
+{id:"mon",name:"Uptime monitoring",desc:"Get an alert the moment your site goes down.",price:3,rec:true},
+{id:"setup",name:"Project setup service",desc:"One-time setup: repo, build, deploy and environment variables.",price:25,rec:false},
+{id:"fx",name:"Google international currency API",desc:"Live exchange rates and currency conversion for your app, set up once with your API access.",price:25,rec:false}
+];
+var cart={};
+function fmt(n){return "$"+n.toFixed(n%1?2:0)}
+function qty(p){return cart[p.id]}
+function label(p,m){return m+(p.unit==="year"?(m===1?" year":" years"):(m===1?" month":" months"))}
+function renderGrid(){
+  var g=document.getElementById("grid");g.innerHTML="";
+  P.forEach(function(p){
+    var m=cart[p.id],c=document.createElement("div");c.className="card"+(p.feat?" feat":"");
+    var left=document.createElement("div");left.style.cssText="display:flex;flex-direction:column;gap:8px;flex:1 1 260px";
+    left.innerHTML=(p.tag?'<span class="tag">'+p.tag+'</span>':'')+'<h3>'+p.name+'</h3><p>'+p.desc+'</p>';
+    var right=document.createElement("div");right.style.cssText="display:flex;flex-direction:column;gap:10px;justify-content:flex-end";
+    right.innerHTML='<div class="price">'+fmt(p.price)+' <small>'+(p.rec?'/ '+(p.unit||'month')+(p.unit?'':' (min. 6 months)'):'one-time')+'</small></div>';
+    var row=document.createElement("div");row.className="row";
+    if(p.rec&&m){
+      var s=document.createElement("div");s.className="stepper";
+      s.innerHTML='<button aria-label="Fewer">&minus;</button><span>'+label(p,m)+'</span><button aria-label="More">+</button>';
+      s.children[0].onclick=function(){if(m>(p.unit==="year"?1:6))cart[p.id]=m-1;update()};
+      s.children[2].onclick=function(){if(m<36)cart[p.id]=m+1;update()};
+      row.appendChild(s);
+    }
+    var b=document.createElement("button");b.className="btn"+(m?" in":"");
+    b.textContent=m?"Remove":"Add to order";
+    b.onclick=function(){if(m)delete cart[p.id];else cart[p.id]=p.rec&&p.unit!=="year"?6:1;update()};
+    row.appendChild(b);right.appendChild(row);
+    c.appendChild(left);c.appendChild(right);g.appendChild(c);
+  });
+}
+function total(){return P.reduce(function(t,p){return t+(cart[p.id]?p.price*cart[p.id]:0)},0)}
+function renderCart(){
+  var L=document.getElementById("lines");L.innerHTML="";var any=false;
+  P.forEach(function(p){
+    var m=cart[p.id];if(!m)return;any=true;
+    var d=document.createElement("div");d.className="line";
+    d.innerHTML='<span>'+p.name+'<small>'+(p.rec?fmt(p.price)+' × '+label(p,m):'One-time')+'</small><button>Remove</button></span><b>'+fmt(p.price*m)+'</b>';
+    d.querySelector("button").onclick=function(){delete cart[p.id];update()};
+    L.appendChild(d);
+  });
+  if(!any)L.innerHTML='<p class="empty">Nothing here yet. Add hosting or a tool to get started.</p>';
+  document.getElementById("total").textContent=fmt(total());
+}
+function update(){renderGrid();renderCart()}
+var dlg=document.getElementById("dlg");
+document.getElementById("buy").onclick=function(){
+  if(!total()){document.getElementById("lines").innerHTML='<p class="empty">Add at least one item before you purchase.</p>';return}
+  document.getElementById("amt").textContent="Transfer "+fmt(total())+" to this account to complete your order.";
+  dlg.showModal();
+};
+document.getElementById("close").onclick=function(){dlg.close()};
+dlg.addEventListener("click",function(e){
+  var t=e.target;
+  if(t===dlg)dlg.close();
+  if(t.dataset&&t.dataset.copy){
+    var v=t.dataset.copy;
+    try{navigator.clipboard.writeText(v)}catch(x){}
+    t.textContent="Copied";setTimeout(function(){t.textContent="Copy"},1500);
+  }
+});
+cart.host=6;update();
+</script>
+</body>
+</html>
