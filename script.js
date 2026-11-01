@@ -1,6 +1,7 @@
 var P=[
 {id:"host",name:"Cloud hosting",desc:"Fast, always-on hosting for your site or app. Pay for as many months as you need.",price:10,rec:true,feat:true,tag:"Most popular"},
 {id:"pay",name:"Payment integration API",desc:"Accept one-time payments on your site or app. Each API is set up and connected for you. Choose how many you need.",price:82,rec:false,multi:true,noun:"API",tag:"New"},
+{id:"va",name:"Virtual account API",desc:"Generate dedicated virtual bank accounts for your customers and get notified when they pay. Each API is set up and connected for you. Choose how many you need.",price:105,rec:false,multi:true,noun:"API"},
 {id:"npm",name:"npm dependencies pack",desc:"Your project's npm dependencies installed, configured and ready to deploy.",price:10,rec:false},
 {id:"domain",name:"Custom domain",desc:"Register a .com domain and point it to your host.",price:12,rec:true,unit:"year",step:12,minU:1},
 {id:"ssl",name:"SSL certificate",desc:"HTTPS for your site, set up and renewed for you.",price:8,rec:true},
@@ -14,13 +15,15 @@ var P=[
 {id:"setup",name:"Project setup service",desc:"One-time setup: repo, build, deploy and environment variables.",price:25,rec:false},
 {id:"fx",name:"Google international currency API",desc:"Live exchange rates and currency conversion for your app, set up once with your API access.",price:25,rec:false}
 ];
-var cart={};
+var cart={},q="";
 function fmt(n){return "$"+n.toFixed(n%1?2:0)}
 function qty(p){return cart[p.id]}
 function label(p,m){if(p.multi)return m+" "+p.noun+(m===1?"":"s");return m+(p.unit==="year"?(m===1?" year":" years"):(m===1?" month":" months"))}
 function renderGrid(){
-  var g=document.getElementById("grid");g.innerHTML="";
+  var g=document.getElementById("grid");g.innerHTML="";var shown=0;
   P.forEach(function(p){
+    if(q&&(p.name+" "+p.desc).toLowerCase().indexOf(q)<0)return;
+    shown++;
     var m=cart[p.id],c=document.createElement("div");c.className="card"+(p.feat?" feat":"");
     var left=document.createElement("div");left.style.cssText="display:flex;flex-direction:column;gap:8px;flex:1 1 260px";
     left.innerHTML=(p.tag?'<span class="tag">'+p.tag+'</span>':'')+'<h3>'+p.name+'</h3><p>'+p.desc+'</p>';
@@ -40,6 +43,7 @@ function renderGrid(){
     row.appendChild(b);right.appendChild(row);
     c.appendChild(left);c.appendChild(right);g.appendChild(c);
   });
+  if(!shown)g.innerHTML='<p class="empty" style="grid-column:1/-1">No products match your search.</p>';
 }
 function total(){return P.reduce(function(t,p){return t+(cart[p.id]?p.price*cart[p.id]:0)},0)}
 function renderCart(){
@@ -71,4 +75,5 @@ dlg.addEventListener("click",function(e){
     t.textContent="Copied";setTimeout(function(){t.textContent="Copy"},1500);
   }
 });
+document.getElementById("q").oninput=function(){q=this.value.trim().toLowerCase();renderGrid()};
 cart.host=6;update();

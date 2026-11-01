@@ -22,6 +22,9 @@ header.top{display:flex;justify-content:space-between;align-items:center;padding
 .hero p{color:var(--muted);max-width:52ch;margin:0;font-size:1.05rem}
 .layout{display:grid;grid-template-columns:1fr 330px;gap:24px;align-items:start;padding-bottom:60px}
 @media(max-width:860px){.layout{grid-template-columns:1fr}}
+.search{display:block;width:100%;padding:12px 14px;margin-bottom:14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit}
+.search::placeholder{color:var(--muted)}
+.search:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:10px}
 .card.feat{grid-column:1/-1;border:2px solid var(--accent);flex-direction:row;flex-wrap:wrap;gap:18px;justify-content:space-between}
@@ -65,7 +68,7 @@ dialog h2{margin:0 0 6px}
     <p>Buy cloud hosting by the month and add the npm packages and dev tools your project needs. Pick what you want, see the total, and pay by bank transfer.</p>
   </section>
   <div class="layout">
-    <main><div class="grid" id="grid"></div></main>
+    <main><input type="search" class="search" id="q" placeholder="Search products, e.g. hosting, API, domain" aria-label="Search products" autocomplete="off"><div class="grid" id="grid"></div></main>
     <aside class="cart" aria-live="polite">
       <h2>Your order</h2>
       <div id="lines"></div>
@@ -92,6 +95,7 @@ dialog h2{margin:0 0 6px}
 var P=[
 {id:"host",name:"Cloud hosting",desc:"Fast, always-on hosting for your site or app. Pay for as many months as you need.",price:10,rec:true,feat:true,tag:"Most popular"},
 {id:"pay",name:"Payment integration API",desc:"Accept one-time payments on your site or app. Each API is set up and connected for you. Choose how many you need.",price:82,rec:false,multi:true,noun:"API",tag:"New"},
+{id:"va",name:"Virtual account API",desc:"Generate dedicated virtual bank accounts for your customers and get notified when they pay. Each API is set up and connected for you. Choose how many you need.",price:105,rec:false,multi:true,noun:"API"},
 {id:"npm",name:"npm dependencies pack",desc:"Your project's npm dependencies installed, configured and ready to deploy.",price:10,rec:false},
 {id:"domain",name:"Custom domain",desc:"Register a .com domain and point it to your host.",price:12,rec:true,unit:"year",step:12,minU:1},
 {id:"ssl",name:"SSL certificate",desc:"HTTPS for your site, set up and renewed for you.",price:8,rec:true},
@@ -105,13 +109,15 @@ var P=[
 {id:"setup",name:"Project setup service",desc:"One-time setup: repo, build, deploy and environment variables.",price:25,rec:false},
 {id:"fx",name:"Google international currency API",desc:"Live exchange rates and currency conversion for your app, set up once with your API access.",price:25,rec:false}
 ];
-var cart={};
+var cart={},q="";
 function fmt(n){return "$"+n.toFixed(n%1?2:0)}
 function qty(p){return cart[p.id]}
 function label(p,m){if(p.multi)return m+" "+p.noun+(m===1?"":"s");return m+(p.unit==="year"?(m===1?" year":" years"):(m===1?" month":" months"))}
 function renderGrid(){
-  var g=document.getElementById("grid");g.innerHTML="";
+  var g=document.getElementById("grid");g.innerHTML="";var shown=0;
   P.forEach(function(p){
+    if(q&&(p.name+" "+p.desc).toLowerCase().indexOf(q)<0)return;
+    shown++;
     var m=cart[p.id],c=document.createElement("div");c.className="card"+(p.feat?" feat":"");
     var left=document.createElement("div");left.style.cssText="display:flex;flex-direction:column;gap:8px;flex:1 1 260px";
     left.innerHTML=(p.tag?'<span class="tag">'+p.tag+'</span>':'')+'<h3>'+p.name+'</h3><p>'+p.desc+'</p>';
@@ -131,6 +137,7 @@ function renderGrid(){
     row.appendChild(b);right.appendChild(row);
     c.appendChild(left);c.appendChild(right);g.appendChild(c);
   });
+  if(!shown)g.innerHTML='<p class="empty" style="grid-column:1/-1">No products match your search.</p>';
 }
 function total(){return P.reduce(function(t,p){return t+(cart[p.id]?p.price*cart[p.id]:0)},0)}
 function renderCart(){
@@ -162,6 +169,7 @@ dlg.addEventListener("click",function(e){
     t.textContent="Copied";setTimeout(function(){t.textContent="Copy"},1500);
   }
 });
+document.getElementById("q").oninput=function(){q=this.value.trim().toLowerCase();renderGrid()};
 cart.host=6;update();
 </script>
 </body>
