@@ -91,6 +91,7 @@ dialog h2{margin:0 0 6px}
 <script>
 var P=[
 {id:"host",name:"Cloud hosting",desc:"Fast, always-on hosting for your site or app. Pay for as many months as you need.",price:10,rec:true,feat:true,tag:"Most popular"},
+{id:"pay",name:"Payment integration API",desc:"Accept one-time payments on your site or app. Each API is set up and connected for you. Choose how many you need.",price:82,rec:false,multi:true,noun:"API",tag:"New"},
 {id:"npm",name:"npm dependencies pack",desc:"Your project's npm dependencies installed, configured and ready to deploy.",price:10,rec:false},
 {id:"domain",name:"Custom domain",desc:"Register a .com domain and point it to your host.",price:12,rec:true,unit:"year",step:12,minU:1},
 {id:"ssl",name:"SSL certificate",desc:"HTTPS for your site, set up and renewed for you.",price:8,rec:true},
@@ -107,7 +108,7 @@ var P=[
 var cart={};
 function fmt(n){return "$"+n.toFixed(n%1?2:0)}
 function qty(p){return cart[p.id]}
-function label(p,m){return m+(p.unit==="year"?(m===1?" year":" years"):(m===1?" month":" months"))}
+function label(p,m){if(p.multi)return m+" "+p.noun+(m===1?"":"s");return m+(p.unit==="year"?(m===1?" year":" years"):(m===1?" month":" months"))}
 function renderGrid(){
   var g=document.getElementById("grid");g.innerHTML="";
   P.forEach(function(p){
@@ -115,18 +116,18 @@ function renderGrid(){
     var left=document.createElement("div");left.style.cssText="display:flex;flex-direction:column;gap:8px;flex:1 1 260px";
     left.innerHTML=(p.tag?'<span class="tag">'+p.tag+'</span>':'')+'<h3>'+p.name+'</h3><p>'+p.desc+'</p>';
     var right=document.createElement("div");right.style.cssText="display:flex;flex-direction:column;gap:10px;justify-content:flex-end";
-    right.innerHTML='<div class="price">'+fmt(p.price)+' <small>'+(p.rec?'/ '+(p.unit||'month')+(p.unit?'':' (min. 6 months)'):'one-time')+'</small></div>';
+    right.innerHTML='<div class="price">'+fmt(p.price)+' <small>'+(p.multi?'one-time, per '+p.noun:p.rec?'/ '+(p.unit||'month')+(p.unit?'':' (min. 6 months)'):'one-time')+'</small></div>';
     var row=document.createElement("div");row.className="row";
-    if(p.rec&&m){
+    if((p.rec||p.multi)&&m){
       var s=document.createElement("div");s.className="stepper";
       s.innerHTML='<button aria-label="Fewer">&minus;</button><span>'+label(p,m)+'</span><button aria-label="More">+</button>';
-      s.children[0].onclick=function(){if(m>(p.unit==="year"?1:6))cart[p.id]=m-1;update()};
-      s.children[2].onclick=function(){if(m<36)cart[p.id]=m+1;update()};
+      s.children[0].onclick=function(){if(m>(p.multi||p.unit==="year"?1:6))cart[p.id]=m-1;update()};
+      s.children[2].onclick=function(){if(m<(p.multi?50:36))cart[p.id]=m+1;update()};
       row.appendChild(s);
     }
     var b=document.createElement("button");b.className="btn"+(m?" in":"");
     b.textContent=m?"Remove":"Add to order";
-    b.onclick=function(){if(m)delete cart[p.id];else cart[p.id]=p.rec&&p.unit!=="year"?6:1;update()};
+    b.onclick=function(){if(m)delete cart[p.id];else cart[p.id]=p.rec&&p.unit!=="year"&&!p.multi?6:1;update()};
     row.appendChild(b);right.appendChild(row);
     c.appendChild(left);c.appendChild(right);g.appendChild(c);
   });
@@ -137,7 +138,7 @@ function renderCart(){
   P.forEach(function(p){
     var m=cart[p.id];if(!m)return;any=true;
     var d=document.createElement("div");d.className="line";
-    d.innerHTML='<span>'+p.name+'<small>'+(p.rec?fmt(p.price)+' × '+label(p,m):'One-time')+'</small><button>Remove</button></span><b>'+fmt(p.price*m)+'</b>';
+    d.innerHTML='<span>'+p.name+'<small>'+(p.rec?fmt(p.price)+' × '+label(p,m):p.multi?fmt(p.price)+' × '+label(p,m)+' · one-time':'One-time')+'</small><button>Remove</button></span><b>'+fmt(p.price*m)+'</b>';
     d.querySelector("button").onclick=function(){delete cart[p.id];update()};
     L.appendChild(d);
   });
