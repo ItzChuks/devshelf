@@ -15,7 +15,8 @@ var P=[
 {id:"vps",name:"VPS server",desc:"2 vCPU, 4 GB RAM, 80 GB SSD with full root access.",price:20,rec:true},
 {id:"mon",name:"Uptime monitoring",desc:"Get an alert the moment your site goes down.",price:3,rec:true},
 {id:"setup",name:"Project setup service",desc:"One-time setup: repo, build, deploy and environment variables.",price:25,rec:false},
-{id:"fx",name:"Google international currency API",desc:"Live exchange rates and currency conversion for your app, set up once with your API access.",price:25,rec:false}
+{id:"fx",name:"Google international currency API",desc:"Live exchange rates and currency conversion for your app, set up once with your API access.",price:25,rec:false},
+{id:"cbx",name:"Code block/expire reusable API",desc:"Block or expire access to your code, app or API keys on demand, reusable across all your projects. Set up and connected for you.",price:410.26,rec:false}
 ];
 var cart={},q="";
 function fmt(n){return "$"+n.toFixed(n%1?2:0)}
